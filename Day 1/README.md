@@ -1,30 +1,163 @@
-# Introduction to RTL Design and Synthesis Program
+# Day 1: Kickstarting Verilog RTL Design & Logic Synthesis
 
-This program is 
+Welcome to your journey into the fascinating world of digital hardware design!
 
-## Table of Contents of DAY-1
+On Day 1, you’ll begin by learning the basics of **Verilog**, a hardware description language used to design digital circuits. You’ll also dive into practical tools like **Icarus Verilog** (for simulation) and **Yosys** (for synthesis). By the end of today, you will have written, simulated, and synthesized your first Verilog-based digital circuit!
 
-1. Introduction to Simulator,Design and Testbench
-2. Getting started with iverilog
+---
 
-## 1.Introduction to Simulator,Design and Testbench
+## Agenda for Day 1
 
-### Simulator 
+1. Simulator, Design & Testbench 
+2. Setting Up with Icarus Verilog
+3. Practical: Simulating Your Design with Icarus Verilog
+4. Introduction to Yosys – Verilog Synthesis Tool
+5. Practical: Synthesizing a Design Using Yosys
 
-A simulator is a software tool used to model and analyze the behavior of digital circuits. It is used to simulate a RTL design to verify the adherence of a specification. The simulator which we are going to use here is iverilog.
+---
+
+## 1. Simulator, Design & Testbench 
+
+### Simulator
+
+A simulator mimics the behavior of a digital circuit on your computer. It helps verify that your design performs as expected *before* it's built or implemented on hardware.
 
 ### Design
 
-Design is a set of verilog codes applied on the design phase of the simulator which has the intended functionality to meet the required specifications of the required digital circuit.
+This is your Verilog code – a description of what your circuit is supposed to do. Think of it as your digital blueprint.
 
-### Testbench 
+### Testbench
 
-It is a set of codes or test vectors used to test the functionality of the design as it matches the required specifications or not.
+A testbench is like an automated tester. It provides various input signals to your design and observes the outputs, ensuring everything behaves as it should under different conditions.
 
-![image](https://github.com/Sanmalai/RTL_design_workshop_vsd/blob/main/Day%201/Untitled.pdf)
+---
 
-### How simulator works?
+## 2. Setting Up with Icarus Verilog
 
-A simulator checks for change in input signals and its output is also is determined by the change in input. 
+**Icarus Verilog** is an open-source tool used for compiling and simulating Verilog designs. Here's the typical workflow:
 
+1. Write your **design** and **testbench** files in Verilog.
+2. Use `iverilog` to compile both files into a single executable.
+3. Run the executable to generate a **VCD file** (Value Change Dump) that records how signals change over time.
+4. Use **GTKWave** to view this waveform file and visually inspect your design’s behavior.
 
+---
+
+## 3. Practical: Simulating Your Design with Icarus Verilog
+
+### Example Design: `good_mux.v`
+
+### Example Testbench: `tb_good_mux.v`
+
+### Step-by-Step
+
+**Step 1: Compile the files**
+
+```bash
+iverilog good_mux.v tb_good_mux.v
+```
+
+* This creates an executable file: `a.out`
+
+**Step 2: Run the simulation**
+
+```bash
+./a.out
+```
+
+* This will generate a VCD file (e.g., `tb_good_mux.vcd`)
+
+**Step 3: View the waveform**
+
+```bash
+gtkwave tb_good_mux.vcd
+```
+
+* Analyze how your signals change over time, and verify input/output behavior.
+
+---
+
+## 4. Introduction to Yosys – Verilog Synthesis Tool
+
+### What is Yosys?
+
+Yosys is an open-source tool that takes your Verilog RTL design and converts it into a **gate-level representation**. This process is called **logic synthesis** – translating high-level logic into gates like AND, OR, NOT, etc., that can be physically implemented.
+
+Yosys is widely used in open-source silicon initiatives, academia, and personal learning environments for RTL design and synthesis.
+
+---
+
+## 5. Practical: Synthesizing a Design Using Yosys
+
+Let’s run a synthesis example using the `good_mux.v` design.
+
+### Yosys Command Sequence
+
+```bash
+yosys
+```
+
+Once in the yosys shell, run the following steps:
+
+1. **Read the standard cell library**
+
+```tcl
+read_liberty -lib /path/to/sky130_fd_sc_hd__tt_025C_1v80.lib
+```
+
+2. **Import the Verilog design**
+
+```tcl
+read_verilog /home/vsduser/VLSI/sky130RTLDesignAndSynthesisWorkshop/verilog_files/good_mux.v
+```
+
+3. **Run synthesis**
+
+```tcl
+synth -top good_mux
+```
+
+4. **Map the design to standard cells**
+
+```tcl
+abc -liberty /path/to/sky130_fd_sc_hd__tt_025C_1v80.lib
+```
+
+5. **Visualize the synthesized netlist**
+
+```tcl
+show
+```
+
+---
+
+## From RTL to Gate-Level
+
+* **RTL (Register Transfer Level):** A design abstraction that describes behavior using registers and logic operations.
+* **Synthesis:** The process of converting RTL into a network of logic gates.
+* **Netlist:** The result of synthesis – a description of all gates and how they’re connected.
+
+---
+
+## What Is a `.lib` File?
+
+A `.lib` (Liberty format) file defines the characteristics of standard cells in a particular technology node (e.g., 130nm). It contains:
+
+* Logical functions of each gate (e.g., AND, OR, NOT).
+* Timing and power info.
+* Variants of the same logic gate optimized for different performance/power tradeoffs.
+
+---
+
+### Fast vs Slow Cells – Why Do They Exist?
+
+Cells in a standard cell library may have different drive strengths or delays:
+
+* **Fast cells**: Consume more power, switch quickly.
+* **Slow cells**: Use less power, switch slowly.
+
+### How are cells selected?
+
+The synthesis tool picks the appropriate version of a gate based on performance, area, and power constraints defined by the designer or the tool settings.
+
+---
